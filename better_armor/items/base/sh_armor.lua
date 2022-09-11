@@ -11,6 +11,7 @@ ITEM.gasmask = false
 ITEM.resistance = false
 ITEM.pacData = {}
 ITEM.damage = {1, 1, 1, 1, 1, 1, 1}
+ITEM.speed = 1
 
 --[[
 -- This will change a player's skin after changing the model. Keep in mind it starts at 0.
@@ -61,7 +62,7 @@ end
 
 function ITEM:RemoveOutfit(client)
 	local character = client:GetCharacter()
-			
+
 	client:SetNetVar("gasmask", false)
 	client:SetNetVar("resistance", false)
 
@@ -178,14 +179,17 @@ ITEM.functions.EquipUn = { -- sorry, for name order.
 	icon = "icon16/cross.png",
 	OnRun = function(item)
 		local client = item.player
-		
+
 		armorPlayer(item.player, item.player, 0)
-		
+
 		item:RemoveOutfit(item.player)
-		
+
 		client:SetNetVar("gasmask", false)
 		client:SetNetVar("resistance", false)
-		
+
+		client:SetWalkSpeed(client:GetWalkSpeed() / item.speed)
+		client:SetRunSpeed(client:GetRunSpeed() / item.speed)
+
 		return false
 	end,
 	OnCanRun = function(item)
@@ -218,19 +222,19 @@ ITEM.functions.Equip = {
 			end
 
 			item:SetData("equip", true)
-			
+
 			if (item.gasmask == true) then
 				client:SetNetVar("gasmask", true)
 			else
 				client:SetNetVar("gasmask", false)
 			end
-			
+
 			if (item.resistance == true) then
 				client:SetNetVar("resistance", true)
 			else
 				client:SetNetVar("resistance", false)
 			end
-			
+
 			client:SetNWFloat("dmg_bullet", item.damage[1])
 			client:SetNWFloat("dmg_slash", item.damage[2])
 			client:SetNWFloat("dmg_shock", item.damage[3])
@@ -238,7 +242,10 @@ ITEM.functions.Equip = {
 			client:SetNWFloat("dmg_radiation", item.damage[5])
 			client:SetNWFloat("dmg_acid", item.damage[6])
 			client:SetNWFloat("dmg_explosive", item.damage[7])
-			
+
+			client:SetWalkSpeed(client:GetWalkSpeed() * item.speed)
+			client:SetRunSpeed(client:GetRunSpeed() * item.speed)
+
 			item.player:EmitSound("snd_jack_clothequip.wav", 80)
 			armorPlayer(item.player, item.player, item.armorAmount)
 
